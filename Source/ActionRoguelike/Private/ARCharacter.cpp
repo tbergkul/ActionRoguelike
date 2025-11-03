@@ -3,6 +3,7 @@
 
 #include "ARCharacter.h"
 
+#include "RogueProjectileMagic.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -19,6 +20,8 @@ AARCharacter::AARCharacter()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	MuzzleSocketName = "Muzzle_01";
 }
 
 // Called when the game starts or when spawned
@@ -26,6 +29,17 @@ void AARCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+// Called to bind functionality to input
+void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AARCharacter::Move);
+	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AARCharacter::Look);
+	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AARCharacter::PrimaryAttack);
 }
 
 void AARCharacter::Move(const FInputActionValue& InValue)
@@ -51,20 +65,31 @@ void AARCharacter::Look(const FInputActionInstance& InValue)
 	AddControllerYawInput(InputValue.X);
 }
 
+void AARCharacter::PrimaryAttack()
+{
+	PlayAnimMontage(AttackMontage);
+	
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AARCharacter::AttackTimerElapsed, AttackDelayTime);
+	
+}
+
+void AARCharacter::AttackTimerElapsed()
+{
+	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FRotator SpawnRotation = GetControlRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+}
+
 // Called every frame
 void AARCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-// Called to bind functionality to input
-void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AARCharacter::Move);
-	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AARCharacter::Look);
 }
 
