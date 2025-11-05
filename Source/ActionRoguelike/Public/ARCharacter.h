@@ -12,6 +12,7 @@ struct FInputActionValue;
 class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
+class UNiagaraSystem;
 
 UCLASS()
 class ACTIONROGUELIKE_API AARCharacter : public ACharacter
@@ -27,6 +28,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
 	TSubclassOf<ARogueProjectileMagic> ProjectileClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
+	TObjectPtr<UNiagaraSystem> CastingEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
+	TObjectPtr<USoundBase> CastingSound;
+	
 	UPROPERTY(VisibleAnywhere, Category = "PrimaryAttack")
 	FName MuzzleSocketName;
 
