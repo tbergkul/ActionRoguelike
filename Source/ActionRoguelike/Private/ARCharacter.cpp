@@ -42,6 +42,7 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AARCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AARCharacter::Look);
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AARCharacter::PrimaryAttack);
+	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &AARCharacter::Jump);
 }
 
 void AARCharacter::Move(const FInputActionValue& InValue)
