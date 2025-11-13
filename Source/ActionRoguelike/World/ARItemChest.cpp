@@ -17,14 +17,11 @@ AARItemChest::AARItemChest()
 	LidMeshComponent->SetupAttachment(BaseMeshComponent);
 }
 
-
-void AARItemChest::BeginPlay()
+void AARItemChest::Interact()
 {
-	Super::BeginPlay();
-
+	// Play animation to open the chest
 	SetActorTickEnabled(true);
 }
-
 
 void AARItemChest::Tick(float DeltaTime)
 {

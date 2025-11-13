@@ -3,7 +3,7 @@
 
 #include "ARGameMode.h"
 
-#include "ActionRoguelike/Player/ARPlayerController.h"
+#include "../Player/ARPlayerController.h"
 
 AARGameMode::AARGameMode()
 {

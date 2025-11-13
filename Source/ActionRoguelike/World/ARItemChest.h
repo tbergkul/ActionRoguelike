@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Core/ARInteractionInterface.h"
 #include "GameFramework/Actor.h"
 #include "ARItemChest.generated.h"
 
 class UStaticMeshComponent;
 
 UCLASS()
-class ACTIONROGUELIKE_API AARItemChest : public AActor
+class ACTIONROGUELIKE_API AARItemChest : public AActor, public IARInteractionInterface
 {
 	GENERATED_BODY()
 	
@@ -30,10 +31,10 @@ protected:
 
 	float CurrentAnimationPitch = 0.0f;
 
-	virtual void BeginPlay() override;
-
 public:	
 
+	virtual void Interact() override;
+	
 	virtual void Tick(float DeltaTime) override;
 
 	AARItemChest();

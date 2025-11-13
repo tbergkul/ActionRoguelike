@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "ARPlayerController.generated.h"
 
+class UInputAction;
 class UARInteractionComponent;
 
 /**
@@ -19,9 +20,16 @@ class ACTIONROGUELIKE_API AARPlayerController : public APlayerController
 	
 protected:
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> Input_Interact;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<UARInteractionComponent> InteractionComponent;
 
+
+	void StartInteract();
+
+	virtual void SetupInputComponent() override;
 
 public:
 
