@@ -2,7 +2,8 @@
 
 
 #include "ARInteractionComponent.h"
-#include "../Core/ARInteractionInterface.h"
+#include "ARGameTypes.h"
+#include "Core/ARInteractionInterface.h"
 #include "Engine/OverlapResult.h"
 
 
@@ -31,7 +32,7 @@ void UARInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	//DrawDebugBox(GetWorld(), Center, FVector(20.f), FColor::Red);
 
-	ECollisionChannel CollisionChannel = ECC_Visibility;
+	ECollisionChannel CollisionChannel = COLLISION_INTERACTION;
 
 	FCollisionShape Shape;
 	Shape.SetSphere(InteractionRadius);

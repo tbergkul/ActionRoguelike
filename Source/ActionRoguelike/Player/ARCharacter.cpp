@@ -3,7 +3,7 @@
 
 #include "ARCharacter.h"
 
-#include "RogueProjectileMagic.h"
+#include "Projectiles/RogueProjectileMagic.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"

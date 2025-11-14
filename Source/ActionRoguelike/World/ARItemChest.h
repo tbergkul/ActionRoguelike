@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Core/ARInteractionInterface.h"
+#include "Core/ARInteractionInterface.h"
 #include "GameFramework/Actor.h"
 #include "ARItemChest.generated.h"
 
