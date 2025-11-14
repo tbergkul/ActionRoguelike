@@ -35,7 +35,10 @@ void AARItemChest::Tick(float DeltaTime)
 
 	if (FMath::IsNearlyEqual(CurrentAnimationPitch, AnimationTargetPitch))
 	{
+		// Animation finished
 		SetActorTickEnabled(false);
+
+		ChestAnimationComplete();
 	}
 }
 

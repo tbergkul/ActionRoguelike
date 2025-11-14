@@ -31,6 +31,11 @@ protected:
 
 	float CurrentAnimationPitch = 0.0f;
 
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Animation")
+	void ChestAnimationComplete();
+
+
 public:	
 
 	virtual void Interact() override;
