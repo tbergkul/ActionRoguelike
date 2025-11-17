@@ -33,25 +33,33 @@ AExplodingActor::AExplodingActor()
 
 float AExplodingActor::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	LoopedFuseNiagaraComponent->ActivateSystem();
+	if (!bHasExploded)
+	{
+		bHasExploded = true;
+		LoopedFuseNiagaraComponent->ActivateSystem();
 
-	LoopedFuseAudioComponent->Activate();
+		LoopedFuseAudioComponent->Activate();
 
-	FTimerHandle FuseTimerHandle;
-	const float FuseDelayTime = 3.0f;
+		FTimerHandle FuseTimerHandle;
+		const float FuseDelayTime = 3.0f;
 
-	GetWorldTimerManager().SetTimer(FuseTimerHandle, this, &AExplodingActor::Explode, FuseDelayTime);
-
+		GetWorldTimerManager().SetTimer(FuseTimerHandle, this, &AExplodingActor::Explode, FuseDelayTime);
+	}
 	return (DamageAmount);
 }
 
 void AExplodingActor::Explode()
 {
+	RadialForceComponent->SetWorldLocation(GetActorLocation());
 	RadialForceComponent->FireImpulse();
+
+	LoopedFuseAudioComponent->Stop();
+	LoopedFuseNiagaraComponent->Deactivate();
+	
+	StaticMeshComponent->AddImpulse(FVector::UpVector * 1000, NAME_None, true);
+	StaticMeshComponent->AddAngularImpulseInDegrees(FVector::RightVector * 1000, NAME_None, true);
 
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionEffect, GetActorLocation());
 
 	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
-	
-	Destroy();
 }

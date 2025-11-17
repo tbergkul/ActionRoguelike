@@ -38,11 +38,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 	TObjectPtr<URadialForceComponent> RadialForceComponent;
 
+	bool bHasExploded = false;
+
 
 public:	
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
+	UFUNCTION(BlueprintCallable)
 	void Explode();
 
 	AExplodingActor();
