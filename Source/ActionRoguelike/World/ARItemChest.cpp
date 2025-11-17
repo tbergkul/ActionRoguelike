@@ -19,7 +19,7 @@ AARItemChest::AARItemChest()
 	LidMeshComponent->SetupAttachment(BaseMeshComponent);
 }
 
-void AARItemChest::Interact()
+void AARItemChest::Interact_Implementation()
 {
 	// Play animation to open the chest
 	SetActorTickEnabled(true);

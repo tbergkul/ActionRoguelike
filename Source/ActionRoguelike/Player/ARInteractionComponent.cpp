@@ -15,11 +15,7 @@ UARInteractionComponent::UARInteractionComponent()
 
 void UARInteractionComponent::Interact()
 {
-	IARInteractionInterface* InteractionInterface = Cast<IARInteractionInterface>(SelectedActor);
-	if (InteractionInterface)
-	{
-		InteractionInterface->Interact();
-	}
+	IARInteractionInterface::Execute_Interact(SelectedActor);
 }
 
 void UARInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
