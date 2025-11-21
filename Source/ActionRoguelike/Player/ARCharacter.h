@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ARCharacter.generated.h"
 
+class AARProjectile;
 class ARogueProjectileMagic;
 struct FInputActionInstance;
 struct FInputActionValue;
@@ -26,7 +27,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
-	TSubclassOf<ARogueProjectileMagic> ProjectileClass;
+	TSubclassOf<AARProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
 	TObjectPtr<UNiagaraSystem> CastingEffect;
@@ -39,6 +40,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
 	TObjectPtr<UAnimMontage> AttackMontage;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "SecondaryAttack")
+	TSubclassOf<AARProjectile> SecondaryProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	TSubclassOf<AARProjectile> TeleportProjectileClass;
+
 	
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -48,6 +57,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_SecondaryAttack;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_Teleport;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Jump;
@@ -64,7 +77,11 @@ protected:
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
 	void PrimaryAttack();
-	void AttackTimerElapsed();
+	void AttackTimerElapsed(TSubclassOf<AARProjectile> ProjectileClassToSpawn);
+
+	void SecondaryAttack();
+
+	void Teleport();
 
 public:	
 	// Called every frame

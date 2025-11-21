@@ -42,6 +42,8 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &AARCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &AARCharacter::Look);
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AARCharacter::PrimaryAttack);
+	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &AARCharacter::SecondaryAttack);
+	EnhancedInput->BindAction(Input_Teleport, ETriggerEvent::Triggered, this, &AARCharacter::Teleport);
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &AARCharacter::Jump);
 }
 
@@ -71,19 +73,21 @@ void AARCharacter::Look(const FInputActionInstance& InValue)
 void AARCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackMontage);
-	
-	FTimerHandle AttackTimerHandle;
-	const float AttackDelayTime = 0.2f;
 
 	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingEffect, GetMesh(), MuzzleSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
 
 	UGameplayStatics::PlaySound2D(this, CastingSound);
 	
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AARCharacter::AttackTimerElapsed, AttackDelayTime);
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
+	FTimerDelegate AttackTimerDelegate;
+	AttackTimerDelegate.BindUObject(this, &AARCharacter::AttackTimerElapsed, ProjectileClass);
+	
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDelayTime, false);
 	
 }
 
-void AARCharacter::AttackTimerElapsed()
+void AARCharacter::AttackTimerElapsed(TSubclassOf<AARProjectile> ProjectileClassToSpawn)
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FRotator SpawnRotation = GetControlRotation();
@@ -91,9 +95,41 @@ void AARCharacter::AttackTimerElapsed()
 	SpawnParams.Instigator = this;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AActor* NewProjectile= GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	AActor* NewProjectile= GetWorld()->SpawnActor<AActor>(ProjectileClassToSpawn, SpawnLocation, SpawnRotation, SpawnParams);
 
 	MoveIgnoreActorAdd(NewProjectile);
+}
+
+void AARCharacter::SecondaryAttack()
+{
+	PlayAnimMontage(AttackMontage);
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingEffect, GetMesh(), MuzzleSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
+
+	UGameplayStatics::PlaySound2D(this, CastingSound);
+	
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
+	FTimerDelegate AttackTimerDelegate;
+	AttackTimerDelegate.BindUObject(this, &AARCharacter::AttackTimerElapsed, SecondaryProjectileClass);
+
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDelayTime, false);
+}
+
+void AARCharacter::Teleport()
+{
+	PlayAnimMontage(AttackMontage);
+
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingEffect, GetMesh(), MuzzleSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true);
+
+	UGameplayStatics::PlaySound2D(this, CastingSound);
+
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
+	FTimerDelegate AttackTimerDelegate;
+	AttackTimerDelegate.BindUObject(this, &AARCharacter::AttackTimerElapsed, TeleportProjectileClass);
+
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDelayTime, false);
 }
 
 // Called every frame
