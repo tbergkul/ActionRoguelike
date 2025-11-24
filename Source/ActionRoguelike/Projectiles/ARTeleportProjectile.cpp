@@ -9,14 +9,7 @@
 
 AARTeleportProjectile::AARTeleportProjectile()
 {
-
-}
-
-void AARTeleportProjectile::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	SphereComponent->OnComponentHit.AddDynamic(this, &AARTeleportProjectile::OnActorHit);
+	ProjectileMovementComponent->InitialSpeed = 6000.f;
 }
 
 void AARTeleportProjectile::BeginPlay()
@@ -24,10 +17,8 @@ void AARTeleportProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	FTimerHandle SelfTeleportTimerHandle;
-	const float SelfTeleportDelay = 2.0f;
-	FTimerDelegate SelfTeleportDelegate;
-	SelfTeleportDelegate.BindUFunction(this, FName("TeleportStart"));
-	GetWorldTimerManager().SetTimer(SelfTeleportTimerHandle, SelfTeleportDelegate, SelfTeleportDelay, false);
+	const float SelfTeleportDelay = 0.2f;
+	GetWorldTimerManager().SetTimer(SelfTeleportTimerHandle, this, &AARTeleportProjectile::TeleportStart, SelfTeleportDelay);
 }
 
 void AARTeleportProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -39,7 +30,6 @@ void AARTeleportProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor
 
 void AARTeleportProjectile::TeleportStart()
 {
-
 	if (bHasStartedTeleport)
 	{
 		return;

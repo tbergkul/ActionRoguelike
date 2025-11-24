@@ -25,7 +25,7 @@ public:
 
 	AARBlackholeProjectile();
 
-	void PostInitializeComponents();
+	virtual void PostInitializeComponents() override;
 
 	
 };
