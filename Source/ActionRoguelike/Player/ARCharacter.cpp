@@ -9,6 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "ActionSystem/ARActionSystemComponent.h"
+#include "Gameframework/CharacterMovementComponent.h"
 
 // Sets default values
 AARCharacter::AARCharacter()
@@ -24,13 +26,15 @@ AARCharacter::AARCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	MuzzleSocketName = "Muzzle_01";
+
+	ActionSystemComponent = CreateDefaultSubobject<UARActionSystemComponent>(TEXT("ActionSystemComponent"));
 }
 
-// Called when the game starts or when spawned
-void AARCharacter::BeginPlay()
+void AARCharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+
+	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &AARCharacter::OnHealthChanged);
 }
 
 // Called to bind functionality to input
@@ -46,6 +50,8 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	EnhancedInput->BindAction(Input_Teleport, ETriggerEvent::Triggered, this, &AARCharacter::Teleport);
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &AARCharacter::Jump);
 }
+
+
 
 void AARCharacter::Move(const FInputActionValue& InValue)
 {
@@ -132,10 +138,22 @@ void AARCharacter::Teleport()
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, AttackTimerDelegate, AttackDelayTime, false);
 }
 
-// Called every frame
-void AARCharacter::Tick(float DeltaTime)
+void AARCharacter::OnHealthChanged(float NewHealth, float OldHealth)
 {
-	Super::Tick(DeltaTime);
+	if (FMath::IsNearlyZero(NewHealth))
+	{
+		DisableInput(nullptr);
+		GetMovementComponent()->StopMovementImmediately();
+		PlayAnimMontage(DeathMontage);
+	}
+}
 
+float AARCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	ActionSystemComponent->ApplyHealthChange(-ActualDamage);
+
+	return ActualDamage;
 }
 

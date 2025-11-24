@@ -64,6 +64,6 @@ void UARInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		DrawDebugBox(GetWorld(), BestActor->GetActorLocation(), FVector(60.f), FColor::Green);
 	}
 	
-	DrawDebugSphere(GetWorld(), Center, InteractionRadius, 32, FColor::White);
+	//DrawDebugSphere(GetWorld(), Center, InteractionRadius, 32, FColor::White);
 }
 

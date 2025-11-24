@@ -14,15 +14,14 @@ class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
 class UNiagaraSystem;
+class UARActionSystemComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API AARCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	AARCharacter();
+	
 
 protected:
 
@@ -40,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
 	TObjectPtr<UAnimMontage> AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Death")
+	TObjectPtr<UAnimMontage> DeathMontage;
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "SecondaryAttack")
@@ -70,9 +72,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UARActionSystemComponent> ActionSystemComponent;
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
@@ -83,11 +85,20 @@ protected:
 
 	void Teleport();
 
+	UFUNCTION()
+	void OnHealthChanged(float NewHealth, float OldHealth);
+
+
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+	AARCharacter();
+
+	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Damage interface from Actor
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 };
